@@ -1,5 +1,5 @@
 import type { Recipe } from "../types/RecipeList";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { recipeList } from "../services/RecipeService";
 import { Search } from "../components/SearchBar";
 import { Filter } from "../components/FilterBar";
@@ -20,26 +20,31 @@ export const Home = () => {
     };
     fetchRecipeList();
   }, [search]);
-  const filteredRecipes = recipeListData.filter((recipe) => {
-    const matchesSearch = recipe.strMeal
-      .toLowerCase()
-      .includes(search.toLowerCase());
+  const filteredRecipes = useMemo(() => {
+    return recipeListData.filter((recipe) => {
+      const matchesSearch = recipe.strMeal
+        .toLowerCase()
+        .includes(search.toLowerCase());
 
-    const matchesCategory =
-      categories === "" || recipe.strCategory === categories;
+      const matchesCategory =
+        categories === "" || recipe.strCategory === categories;
 
-    const matchesMeal = meal === "" || recipe.strArea === meal;
+      const matchesMeal = meal === "" || recipe.strArea === meal;
 
-    const matchesIngredient =
-      ingredients === "" ||
-      Array.from({ length: 20 }, (_, index) => {
-        const ingredient = recipe[`strIngredient${index + 1}` as keyof Recipe];
+      const matchesIngredient =
+        ingredients === "" ||
+        Array.from({ length: 20 }, (_, index) => {
+          const ingredient =
+            recipe[`strIngredient${index + 1}` as keyof Recipe];
 
-        return typeof ingredient === "string" ? ingredient.toLowerCase() : "";
-      }).includes(ingredients.toLowerCase());
+          return typeof ingredient === "string" ? ingredient.toLowerCase() : "";
+        }).includes(ingredients.toLowerCase());
 
-    return matchesSearch && matchesCategory && matchesMeal && matchesIngredient;
-  });
+      return (
+        matchesSearch && matchesCategory && matchesMeal && matchesIngredient
+      );
+    });
+  }, [recipeListData, search, categories, meal, ingredients]);
   return (
     <>
       <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
