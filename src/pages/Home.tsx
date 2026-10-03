@@ -7,10 +7,10 @@ import { RecipeList } from "../components/RecipeList";
 
 export const Home = () => {
   const [recipeListData, setRecipeListData] = useState<Recipe[]>([]);
-  const [search, setSearch] = useState<string>("");
-  const [ingredients, setIngredients] = useState<string>("");
-  const [categories, setCategories] = useState<string>("");
-  const [meal, setMeal] = useState<string>("");
+  const [search, setSearch] = useState("");
+  const [ingredients, setIngredients] = useState("");
+  const [categories, setCategories] = useState("");
+  const [meal, setMeal] = useState("");
   useEffect(() => {
     const fetchRecipeList = async () => {
       const response = await recipeList({
@@ -20,6 +20,26 @@ export const Home = () => {
     };
     fetchRecipeList();
   }, [search]);
+  const filteredRecipes = recipeListData.filter((recipe) => {
+    const matchesSearch = recipe.strMeal
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesCategory =
+      categories === "" || recipe.strCategory === categories;
+
+    const matchesMeal = meal === "" || recipe.strArea === meal;
+
+    const matchesIngredient =
+      ingredients === "" ||
+      Array.from({ length: 20 }, (_, index) => {
+        const ingredient = recipe[`strIngredient${index + 1}` as keyof Recipe];
+
+        return typeof ingredient === "string" ? ingredient.toLowerCase() : "";
+      }).includes(ingredients.toLowerCase());
+
+    return matchesSearch && matchesCategory && matchesMeal && matchesIngredient;
+  });
   return (
     <>
       <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -33,10 +53,10 @@ export const Home = () => {
             setCategories={setCategories}
             meal={meal}
             setMeal={setMeal}
-            recipeListData={recipeListData}
+            recipeListData={filteredRecipes}
           />
 
-          <RecipeList recipeListData={recipeListData} />
+          <RecipeList recipeListData={filteredRecipes} />
         </div>
       </main>
     </>
