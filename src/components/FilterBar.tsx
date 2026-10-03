@@ -1,4 +1,3 @@
-import React from "react";
 import type { Recipe } from "../types/RecipeList";
 import type { Dispatch, SetStateAction } from "react";
 

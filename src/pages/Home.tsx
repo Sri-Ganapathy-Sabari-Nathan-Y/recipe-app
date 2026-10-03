@@ -1,5 +1,5 @@
 import type { Recipe } from "../types/RecipeList";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { recipeList } from "../services/RecipeService";
 import { Search } from "../components/SearchBar";
 import { Filter } from "../components/FilterBar";
